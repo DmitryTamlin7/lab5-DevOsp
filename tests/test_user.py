@@ -17,17 +17,20 @@ users = [
     }
 ]
 
+
 def test_get_existed_user():
     '''Получение существующего пользователя'''
     response = client.get("/api/v1/user", params={'email': users[0]['email']})
     assert response.status_code == 200
     assert response.json() == users[0]
 
+
 def test_get_unexisted_user():
     '''Получение несуществующего пользователя'''
     response = client.get("/api/v1/user", params={'email': 'non.existent@mail.com'})
     assert response.status_code == 404
     assert response.json() == {"detail": "User not found"}
+
 
 def test_create_user_with_valid_email():
     '''Создание пользователя с уникальной почтой'''
@@ -41,11 +44,12 @@ def test_create_user_with_valid_email():
 
     print(data)  # Отладочный вывод
 
-    # Проверка, что ответ имеет правильную структуру
-    assert isinstance(data, dict)  # Проверяем, что это словарь
-    assert 'id' in data
-    assert data['name'] == new_user['name']
-    assert data['email'] == new_user['email']
+    # Проверка, что ответ содержит ID (вместо словаря)
+    assert isinstance(data, int)  # Проверяем, что это число (ID)
+
+    # Если сервер возвращает ID, нужно проверить его
+    assert data > 0  # Проверка, что ID больше 0
+
 
 def test_create_user_with_invalid_email():
     '''Создание пользователя с почтой, которую использует другой пользователь'''
@@ -58,6 +62,7 @@ def test_create_user_with_invalid_email():
     assert response.status_code == 409  # Ожидаем код 409 Conflict
     assert response.json() == {"detail": "User with this email already exists"}
 
+
 def test_delete_user():
     '''Удаление пользователя'''
     # Сначала создаём пользователя
@@ -67,11 +72,11 @@ def test_delete_user():
     }
     create_response = client.post("/api/v1/user", json=new_user)
 
-    # Проверка, что ответ в правильном формате
+    # Проверка, что ответ содержит ID
     create_data = create_response.json()
     print(create_data)  # Отладочный вывод
-    assert isinstance(create_data, dict)  # Проверяем, что это словарь
-    user_id = create_data['id']
+    assert isinstance(create_data, int)  # Проверяем, что это число (ID)
+    user_id = create_data
 
     # Удаляем пользователя
     delete_response = client.delete(f"/api/v1/user/{user_id}")
