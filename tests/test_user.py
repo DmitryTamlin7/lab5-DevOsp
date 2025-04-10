@@ -79,13 +79,16 @@ def test_delete_user():
     print(f"Созданный пользователь: {create_data}")  # Отладочный вывод
 
     assert isinstance(create_data, int)  # Проверяем, что это число (ID)
-    user_id = create_data
 
-    # Проверяем, что пользователь действительно был создан
-    assert user_id > 0  # Проверяем, что ID валидный
+    # Получаем email для удаления
+    user_email = new_user['email']
 
-    # Удаляем пользователя
-    delete_response = client.delete(f"/api/v1/user/{user_id}")
+    # Удаляем пользователя по email
+    delete_response = client.delete(f"/api/v1/user?email={user_email}")
     print(f"Ответ на удаление: {delete_response.status_code}")  # Отладочный вывод
 
     assert delete_response.status_code == 204  # Ожидаем код 204 (успешное удаление)
+
+    # Проверяем, что пользователь действительно был удален
+    check_response = client.get("/api/v1/user", params={'email': user_email})
+    assert check_response.status_code == 404  # Ожидаем код 404 (пользователь не найден)

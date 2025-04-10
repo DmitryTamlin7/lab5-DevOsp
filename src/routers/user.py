@@ -26,7 +26,12 @@ async def create_user(data: CreateUser):
     db.create_user(data.name, data.email)
     return db.get_user_by_email(data.email)['id']
 
+
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(email: str):
     '''Удаление пользователя'''
+    user = db.get_user_by_email(email)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     db.delete_user_by_email(email)
+
