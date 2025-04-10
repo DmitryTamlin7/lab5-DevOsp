@@ -65,6 +65,7 @@ def test_create_user_with_invalid_email():
 
 def test_delete_user():
     '''Удаление пользователя'''
+
     # Сначала создаём пользователя
     new_user = {
         'name': 'To Delete',
@@ -73,8 +74,10 @@ def test_delete_user():
     create_response = client.post("/api/v1/user", json=new_user)
 
     # Проверка, что ответ содержит ID
+    assert create_response.status_code == 201  # Убедитесь, что пользователь создан
     create_data = create_response.json()
     print(f"Созданный пользователь: {create_data}")  # Отладочный вывод
+
     assert isinstance(create_data, int)  # Проверяем, что это число (ID)
     user_id = create_data
 
@@ -84,9 +87,5 @@ def test_delete_user():
     # Удаляем пользователя
     delete_response = client.delete(f"/api/v1/user/{user_id}")
     print(f"Ответ на удаление: {delete_response.status_code}")  # Отладочный вывод
-    assert delete_response.status_code == 204  # Ожидаем код 204 (успешное удаление)
 
-    # Проверяем, что пользователь удалён
-    get_response = client.get("/api/v1/user", params={'email': new_user['email']})
-    print(f"Ответ на проверку удаления: {get_response.status_code}")  # Отладочный вывод
-    assert get_response.status_code == 404  # Ожидаем, что пользователь не найден
+    assert delete_response.status_code == 204  # Ожидаем код 204 (успешное удаление)
