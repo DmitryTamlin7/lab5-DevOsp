@@ -5,3 +5,4 @@ class Settings(BaseSettings):
     SERVER_PORT: int = 8080
     
 settings = Settings()
+

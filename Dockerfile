@@ -1,9 +1,11 @@
-FROM python:3.11
-
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+FROM python:3.12-slim
 
 WORKDIR /app
-COPY src .
 
-ENTRYPOINT [ "python", "main.py" ]
+COPY . .
+
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+EXPOSE 8080
+
+CMD ["python", "-m", "app.main"]
