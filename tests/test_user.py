@@ -42,13 +42,13 @@ def test_create_user_with_valid_email():
     assert response.status_code == 201
     data = response.json()
 
-    print(data)  # Отладочный вывод
+    print(data)
 
-    # Проверка, что ответ содержит ID (вместо словаря)
+
     assert isinstance(data, int)  # Проверяем, что это число (ID)
 
-    # Если сервер возвращает ID, нужно проверить его
-    assert data > 0  # Проверка, что ID больше 0
+
+    assert data > 0
 
 
 def test_create_user_with_invalid_email():
@@ -66,29 +66,29 @@ def test_create_user_with_invalid_email():
 def test_delete_user():
     '''Удаление пользователя'''
 
-    # Сначала создаём пользователя
+
     new_user = {
         'name': 'To Delete',
         'email': 'delete.me@mail.com',
     }
     create_response = client.post("/api/v1/user", json=new_user)
 
-    # Проверка, что ответ содержит ID
-    assert create_response.status_code == 201  # Убедитесь, что пользователь создан
+
+    assert create_response.status_code == 201
     create_data = create_response.json()
-    print(f"Созданный пользователь: {create_data}")  # Отладочный вывод
+    print(f"Созданный пользователь: {create_data}")
 
-    assert isinstance(create_data, int)  # Проверяем, что это число (ID)
+    assert isinstance(create_data, int)
 
-    # Получаем email для удаления
+
     user_email = new_user['email']
 
-    # Удаляем пользователя по email
+
     delete_response = client.delete(f"/api/v1/user?email={user_email}")
-    print(f"Ответ на удаление: {delete_response.status_code}")  # Отладочный вывод
+    print(f"Ответ на удаление: {delete_response.status_code}")
 
-    assert delete_response.status_code == 204  # Ожидаем код 204 (успешное удаление)
+    assert delete_response.status_code == 204
 
-    # Проверяем, что пользователь действительно был удален
+
     check_response = client.get("/api/v1/user", params={'email': user_email})
-    assert check_response.status_code == 404  # Ожидаем код 404 (пользователь не найден)
+    assert check_response.status_code == 404
